@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информация об альбомах</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .album {
+            cursor: pointer;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .album:hover {
+            background-color: #f0f0f0;
+        }
+        #albumInfo {
+            margin-top: 20px;
+            border: 1px solid #000;
+            padding: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Список альбомов</h1>
+<div id="albumList"></div>
+<div id="albumInfo"></div>
+
+<script>
+    // Функция для загрузки XML файла
+    function loadAlbums() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "albums.xml", true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                displayAlbums(xhr.responseXML);
+            }
+        };
+        xhr.send();
+    }
+
+    // Функция для отображения альбомов
+    function displayAlbums(xml) {
+        const albums = xml.getElementsByTagName("album");
+        const albumList = document.getElementById("albumList");
+
+        for (let i = 0; i < albums.length; i++) {
+            const title = albums[i].getElementsByTagName("title")[0].textContent;
+            const artist = albums[i].getElementsByTagName("artist")[0].textContent;
+            const year = albums[i].getElementsByTagName("year")[0].textContent;
+
+            const albumDiv = document.createElement("div");
+            albumDiv.className = "album";
+            albumDiv.textContent = `${title} - ${artist} (${year})`;
+            albumDiv.onclick = function() {
+                showAlbumInfo(albums[i]);
+            };
+
+            albumList.appendChild(albumDiv);
+        }
+    }
+
+    // Функция для отображения информации об альбоме
+    function showAlbumInfo(album) {
+        const title = album.getElementsByTagName("title")[0].textContent;
+        const artist = album.getElementsByTagName("artist")[0].textContent;
+        const year = album.getElementsByTagName("year")[0].textContent;
+        const genre = album.getElementsByTagName("genre")[0].textContent;
+        const description = album.getElementsByTagName("description")[0].textContent;
+
+        const albumInfo = document.getElementById("albumInfo");
+        albumInfo.innerHTML = `
+            <h2>${title}</h2>
+            <p><strong>Исполнитель:</strong> ${artist}</p>
+            <p><strong>Год:</strong> ${year}</p>
+            <p><strong>Жанр:</strong> ${genre}</p>
+            <p><strong>Описание:</strong> ${description}</p>
+        `;
+        albumInfo.style.display = "block";
+    }
+
+    // Загружаем альбомы при загрузке страницы
+    window.onload = loadAlbums;
+</script>
+
+</body>
+</html>
